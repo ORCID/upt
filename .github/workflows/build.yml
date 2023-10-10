@@ -1,9 +1,6 @@
-name: Publish
+name: Build
 
 on:
-  push:
-    tags:
-      - '*'
   workflow_dispatch:
 
 jobs:
@@ -65,21 +62,17 @@ jobs:
     - name: Check sha_short
       run: echo "${{ steps.vars.outputs.sha_short }}"
 
-    - name: Upload binaries to release
-      uses: svenstaro/upload-release-action@v1-release
+    - name: Upload binaries as artifacts
+      uses: actions/upload-artifact@v3
       if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
       with:
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: target/${{ matrix.target }}/release/upt
-        asset_name: upt-${{ matrix.target }}
-        tag: ${{ github.ref }}
+        name: upt-${{ matrix.target }}-${{ steps.vars.outputs.sha_short }}
+        path: target/${{ matrix.target }}/release/upt
 
-    - name: Upload binaries to release
-      uses: svenstaro/upload-release-action@v1-release
+    - name: Upload binaries as artifacts
+      uses: actions/upload-artifact@v3
       if: matrix.os == 'windows-latest'
       with:
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: target/${{ matrix.target }}/release/upt.exe
-        asset_name: upt-${{ matrix.target }}.exe
-        tag: ${{ github.ref }}
+        name: upt-${{ matrix.target }}-${{ steps.vars.outputs.sha_short }}.exe
+        path: target/${{ matrix.target }}/release/upt
 
